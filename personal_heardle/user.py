@@ -45,21 +45,24 @@ def parse_spotify_to_df(json_res):
 
 
 USER_DATABASE = "data/users.json"
-with open(USER_DATABASE, "r") as f:
-    users = json.load(f)
 
 
 class User:
     def __init__(self, spotify):
         self.name = spotify.me()["display_name"]
         self.id = spotify.me()["id"]
+
+        with open(USER_DATABASE, "r") as f:
+            users = json.load(f)
         if self.id not in users:
-            self.song_list = self.get_song_list(spotify)
-            users[self.id] = self.create_new_user()
-            self.song_list.to_csv(users[self.id]["song_list"], index="False")
+            self.create_new_user(spotify)
+            users[self.id] = self.user_file
+            with open(USER_DATABASE, "w") as f:
+                json.dump(users, f)
+            self.save_stats()
         else:
-            self.song_list = pd.read_csv(users[self.id]["song_list"])
-        self.played_songs = users[self.id]["played_songs"]
+            self.user_from_json(users[self.id])
+            self.song_list = pd.read_csv(self.song_list_file)
 
     def get_song_list(self, spotify):
         results = spotify.current_user_saved_tracks()
@@ -69,31 +72,39 @@ class User:
             tracks.extend(results["items"])
         return parse_spotify_to_df(tracks)
 
-    def create_new_user(self):
-        return {
-            "games_played": 0,
-            "scores": {str(i): 0 for i in range(1, MAX_TURNS + 1)},
-            "song_list": f"data/song_lists/{self.id}.csv",
-            "played_songs": [],
-        }
+    def create_new_user(self, spotify):
+        self.user_file = f"data/users/{self.id}.json"
+        self.games_played = 0
+        self.scores = {str(i): 0 for i in range(1, MAX_TURNS + 1)}
+        self.played_songs = []
+        self.song_list = self.get_song_list(spotify)
+        self.song_list_file = f"data/song_lists/{self.id}.csv"
+        self.song_list.to_csv(self.song_list_file, index="False")
+
+    def save_stats(self):
+        with open(self.user_file, "w") as f:
+            save_dict = self.__dict__.copy()
+            save_dict.pop("song_list")
+            json.dump(save_dict, f)
+
+    def user_from_json(self, json_file):
+        with open(json_file, "r") as f:
+            user_dict = json.load(f)
+        for key, value in user_dict:
+            self.__setattr__(key, value)
 
     def add_score(self, rounds=None):
-        users[self.id]["games_played"] += 1
-
+        self.games_played += 1
         if rounds:
-            users[self.id]["scores"][str(rounds)] += 1
-            users[self.id]["played_songs"] = self.played_songs
+            self.scores[str(rounds)] += 1
+        self.save_stats()
+        wins = sum(int(y) for y in self.scores.values())
 
-        with open(USER_DATABASE, "w") as f:
-            json.dump(users, f)
-        wins = sum(int(y) for y in users[self.id]["scores"].values())
-
-        return wins, users[self.id]["games_played"]
+        return wins, self.games_played
 
     def get_plot(self):
-        scores = users[self.id]["scores"]
-        x = [int(x) for x in scores.keys()]
-        y = [int(y) for y in scores.values()]
+        x = [int(x) for x in self.scores.keys()]
+        y = [int(y) for y in self.scores.values()]
 
         fig, ax = plt.subplots(figsize=(8, 4), tight_layout=True)
         ax.barh(x, y, color="#45735A")
