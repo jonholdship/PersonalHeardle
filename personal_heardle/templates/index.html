@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Your Personal Heardle</title>
+</head>
+
+<body>
+    <div class="stat-block" style="padding: 2%;">
+        <h1>Personal Heardle</h1>
+        <p>Can you guess songs from your Spotify library within the first few seconds? </p>
+        <p>Click sign in below to be taken to Spotify to authenticate yourself and give us permission to access your liked songs, we'll download a list of them and store it locally. This make take some time on your first log in.</p>
+    </div>
+    <div>
+    <a class="button" href="{{auth_url}}"> Sign in</a>
+    </div>
+</html>

@@ -1,0 +1,7 @@
+config.yaml
+
+.flask-session/
+data/
+__pycache__/
+
+*.pyc

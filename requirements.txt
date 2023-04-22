@@ -1,0 +1,6 @@
+Flask==2.2.3
+Flask_Session==0.4.0
+pandas==1.4.2
+PyYAML==6.0
+Requests==2.28.2
+spotipy==2.23.0

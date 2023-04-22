@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Your Personal Heardle</title>
+</head>
+
+<body>
+    <div>
+        <h1>Personal Heardle</h1>
+        <p>Hey {{player_name}}, what's playing?</p>
+    </div>
+    <form action="/play" method="POST" autocomplete="off">
+        <label class="form-item">Choose a song from this list:
+            <input list="songs" name="guess" pattern="^({{"|".join(songs)}})$" /></label>
+        <datalist id="songs">
+            <!-- For loop logic of jinja template -->
+            {%for song in songs%}
+            <option value="{{song}}">
+                {%endfor%}
+        </datalist>
+    </form>
+    <div>
+        {%for i in range(0,n_guesses)%}
+        <div class="past-guess", style="background-color: {{colours[i]}};">
+            {{guesses[i]}}
+        </div>
+        {%endfor%}
+    </div>
+
+    <audio controls>
+        <source src=" /wav" type="audio/mpeg">
+        Your browser does not support the audio tag.
+    </audio>
+
+</html>
