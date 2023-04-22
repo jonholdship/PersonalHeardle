@@ -72,7 +72,7 @@ class User:
     def create_new_user(self):
         return {
             "games_played": 0,
-            "scores": {str(i): 0 for i in range(0, MAX_TURNS + 1)},
+            "scores": {str(i): 0 for i in range(1, MAX_TURNS + 1)},
             "song_list": f"data/song_lists/{self.id}.csv",
             "played_songs": [],
         }

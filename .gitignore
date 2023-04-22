@@ -1,6 +1,6 @@
 config.yaml
 
-.flask-session/
+.flask_session/
 data/
 __pycache__/
 
