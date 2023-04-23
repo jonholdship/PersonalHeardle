@@ -90,7 +90,7 @@ class User:
     def user_from_json(self, json_file):
         with open(json_file, "r") as f:
             user_dict = json.load(f)
-        for key, value in user_dict:
+        for key, value in user_dict.items():
             self.__setattr__(key, value)
 
     def add_score(self, rounds=None):
